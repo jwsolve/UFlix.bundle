@@ -1,0 +1,81 @@
+########################################################################################
+def NormalizeURL(url):
+
+	return url
+
+
+########################################################################################
+def MetadataObjectForURL(url):
+
+	page = HTML.ElementFromURL(url)
+	title = page.xpath("//a[@class='title-title']/text()")[0]
+	description = page.xpath("//div[@class='row title-plot']/text()")[0]
+	thumb = page.xpath("//img[@class='img-responsive']/@src")[0]
+	url = url
+
+	return VideoClipObject(
+		title = title,
+		summary = description.strip(),
+		thumb = thumb
+	)
+
+########################################################################################
+def MediaObjectsForURL(url):
+
+	return [
+		MediaObject(
+			parts = [
+				PartObject(key=Callback(PlayVideo, url=url, post_url=url, res=720))
+			],
+			video_resolution = 720,
+			bitrate = 1500,
+			container = Container.MP4,
+			video_codec = VideoCodec.H264,
+			audio_codec = AudioCodec.AAC,
+			audio_channels = 2,
+			optimized_for_streaming = True if Client.Product != 'Plex Web' else False
+		)
+	]
+
+########################################################################################
+@indirect
+def PlayVideo(url, res):
+
+	page = HTML.ElementFromURL(url)
+	view_url = ""
+	for each in page.xpath("//td[@class='col-sm-3']/center/center/a"):
+		view_url = each.xpath("./@href")[0] + "," + view_url
+
+	view_url = view_url.rstrip(',')
+	view_url = sorted(view_url.split(','), key=str.lower)
+	frameurl = ""
+
+	for vurl in view_url:
+		framelink = HTML.ElementFromURL(vurl)
+		try: 
+			frameurl = framelink.xpath("//iframe/@src")[0]
+			if "cloudzilla" in frameurl:
+				video_link = HTTP.Request(frameurl).content
+				try:
+					video_url = Regex('var vurl = "([^"]+)"').search(video_link).groups()[0]
+				       	return IndirectResponse(VideoClipObject, key = video_url)
+				except:
+					pass
+			elif "vidzi" in vurl:
+				video_link = HTTP.Request(frameurl).content
+				try:
+					video_url = Regex('file:\s"([^"]+)"').search(video_link).groups()[0]
+					return IndirectResponse(VideoClipObject, key=video_url)
+					break
+				except:
+					pass
+			elif "vodlocker" in frameurl:
+				video_link = HTTP.Request(frameurl).content
+				try:
+					video_url = Regex('file: "([^"]+)"').search(video_link).groups()[0]
+					return IndirectResponse(VideoClipObject, key=video_url)
+					break
+				except:
+					pass
+		except:
+			pass
