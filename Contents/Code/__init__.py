@@ -74,7 +74,7 @@ def ShowCategory(title, category, page_count):
 	
 	for each in page_data.xpath("//figure[contains(@class,'figured')]"):
 		url = each.xpath("./a/@href")[0]
-		title = each.xpath("./a/@title")[0]
+		title = each.xpath("./a/@title")[0].replace('Watch ','',-1).replace(' Online For FREE','',-1)
 		thumb = each.xpath("./a/img/@src")[0]
 		
 		oc.add(DirectoryObject(
