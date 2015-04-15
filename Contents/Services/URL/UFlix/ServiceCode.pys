@@ -59,16 +59,17 @@ def PlayVideo(url, res):
 				try:
 					video_url = Regex('var vurl = "([^"]+)"').search(video_link).groups()[0]
 				       	return IndirectResponse(VideoClipObject, key = video_url)
+					break
 				except:
-					pass
-			elif "vidzi" in vurl:
+					continue
+			elif "vidzi" in frameurl:
 				video_link = HTTP.Request(frameurl).content
 				try:
 					video_url = Regex('file:\s"([^"]+)"').search(video_link).groups()[0]
 					return IndirectResponse(VideoClipObject, key=video_url)
 					break
 				except:
-					pass
+					continue
 			elif "vodlocker" in frameurl:
 				video_link = HTTP.Request(frameurl).content
 				try:
