@@ -49,36 +49,36 @@ def PlayVideo(url, res):
 	view_url = view_url.rstrip(',')
 	view_url = sorted(view_url.split(','), key=str.lower)
 	frameurl = ""
-
 	for vurl in view_url:
-		framelink = HTML.ElementFromURL(vurl)
-		#frameurl = framelink.xpath("//iframe/@src")[0]
-		#return IndirectResponse(VideoClipObject, key = frameurl)
-		try: 
-			frameurl = framelink.xpath("//iframe/@src")[0]
-			if "cloudzilla" in frameurl:
-				video_link = HTTP.Request(frameurl).content
-				try:
-					video_url = Regex('var vurl = "([^"]+)"').search(video_link).groups()[0]
-				       	return IndirectResponse(VideoClipObject, key = video_url)
-					break
-				except:
-					continue
-			elif "vidzi" in frameurl:
-				video_link = HTTP.Request(frameurl).content
-				try:
-					video_url = Regex('file:\s"([^"]+)"').search(video_link).groups()[0]
-					return IndirectResponse(VideoClipObject, key=video_url)
-					break
-				except:
-					continue
-			elif "vodlocker" in frameurl:
-				video_link = HTTP.Request(frameurl).content
-				try:
-					video_url = Regex('file: "([^"]+)"').search(video_link).groups()[0]
-					return IndirectResponse(VideoClipObject, key=video_url)
-					break
-				except:
-					pass
-		except:
+		if "uflix" in vurl:
+			framelink = HTML.ElementFromURL(vurl)
+			try: 
+				frameurl = framelink.xpath("//iframe/@src")[0]
+				#if "cloudzilla" in frameurl:
+				#	video_link = HTTP.Request(frameurl).content
+				#	try:
+				#		video_url = Regex('var vurl = "([^"]+)"').search(video_link).groups()[0]
+				#	       	return IndirectResponse(VideoClipObject, key = video_url)
+				#		break
+				#	except:
+				#		pass
+				if "vidzi" in frameurl:
+					video_link = HTTP.Request(frameurl).content
+					try:
+						video_url = Regex('file:\s"([^"]+)"').search(video_link).groups()[0]
+						return IndirectResponse(VideoClipObject, key=video_url)
+						break
+					except:
+						pass
+				elif "vodlocker" in frameurl:
+					video_link = HTTP.Request(frameurl).content
+					try:
+						video_url = Regex('file: "([^"]+)"').search(video_link).groups()[0]
+						return IndirectResponse(VideoClipObject, key=video_url)
+						break
+					except:
+						pass
+			except:
+				pass
+		else:
 			pass
