@@ -52,6 +52,8 @@ def PlayVideo(url, res):
 
 	for vurl in view_url:
 		framelink = HTML.ElementFromURL(vurl)
+		#frameurl = framelink.xpath("//iframe/@src")[0]
+		#return IndirectResponse(VideoClipObject, key = frameurl)
 		try: 
 			frameurl = framelink.xpath("//iframe/@src")[0]
 			if "cloudzilla" in frameurl:

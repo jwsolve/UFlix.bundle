@@ -17,7 +17,7 @@ ICON_SERIES = "icon-series.png"
 ICON_QUEUE = "icon-queue.png"
 BASE_URL = "http://uflix.me"
 MOVIES_URL = "http://uflix.me/movies"
-SEARCH_URL = "http://uflix.me/search/"
+SEARCH_URL = "http://uflix.me/index.php?menu=search&advsearch=1&title="
 
 ######################################################################################
 # Set global variables
@@ -42,6 +42,7 @@ def Start():
 def MainMenu():
 
 	oc = ObjectContainer()
+	oc.add(InputDirectoryObject(key = Callback(Search), title='Search', summary='Search UFlix', prompt='Search for...'))
 	html = HTML.ElementFromURL(MOVIES_URL)
 	for each in html.xpath("//div[@class='form-group']/select/option"):
 		try:
@@ -59,7 +60,6 @@ def MainMenu():
 		except:
 			pass
 
-#	oc.add(InputDirectoryObject(key = Callback(Search), title='Search', summary='Search Zumvo', prompt='Search for...'))
 	return oc
 
 ######################################################################################
@@ -123,10 +123,10 @@ def Search(query):
 
 	html = HTML.ElementFromString(data)
 
-	for movie in html.xpath("//ul[@class='list-film']/li"):
-		url = movie.xpath("./div[@class='inner']/a/@href")[0]
-		title = movie.xpath("./div[@class='inner']/a/@title")[0]
-		thumb = movie.xpath("./div[@class='inner']/a/img/@data-original")[0]
+	for each in html.xpath("//figure[contains(@class,'figured')]"):
+		url = each.xpath("./a/@href")[0]
+		title = each.xpath("./a/@title")[0].replace('Watch ','',-1).replace(' Online For FREE','',-1)
+		thumb = each.xpath("./a/img/@src")[0]
 
 		oc.add(DirectoryObject(
 				key = Callback(EpisodeDetail, title = title, url = url),
