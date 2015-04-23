@@ -17,7 +17,8 @@ ICON_SERIES = "icon-series.png"
 ICON_QUEUE = "icon-queue.png"
 BASE_URL = "http://uflix.me"
 MOVIES_URL = "http://uflix.me/movies"
-SEARCH_URL = "http://uflix.me/index.php?menu=search&advsearch=1&title="
+SHOWS_URL = "http://uflix.me/tv-shows"
+SEARCH_URL = "http://uflix.me/index.php?menu=search&query="
 
 ######################################################################################
 # Set global variables
@@ -43,7 +44,36 @@ def MainMenu():
 
 	oc = ObjectContainer()
 	oc.add(InputDirectoryObject(key = Callback(Search), title='Search', summary='Search UFlix', prompt='Search for...'))
-	html = HTML.ElementFromURL(MOVIES_URL)
+	oc.add(DirectoryObject(key = Callback(ShowGenres, title="Movies", listtype='/movies'), title = "Movies", thumb = R(ICON_MOVIES)))
+	oc.add(DirectoryObject(key = Callback(ShowGenres, title="TV Shows", listtype='/tv-shows'), title = "TV Shows", thumb = R(ICON_MOVIES)))
+	#html = HTML.ElementFromURL(MOVIES_URL)
+	#for each in html.xpath("//div[@class='form-group']/select/option"):
+	#	try:
+	#		title = each.xpath("./text()")[0]
+	#		url = each.xpath("./@value")[0]
+	#		oc.add(DirectoryObject(
+	#			key = Callback(ShowCategory, 
+	#				title=title, 
+	#				category=url, 
+	#				page_count = 1), 
+	#			title = title, 
+	#			thumb = R(ICON_MOVIES)
+	#			)
+	#		)
+	#	except:
+	#		pass
+
+	return oc
+
+######################################################################################
+# Creates page url from category and creates objects from that page
+
+@route(PREFIX + "/showgenres")	
+def ShowGenres(title, listtype):
+
+	oc = ObjectContainer(title1 = title)
+	oc.add(InputDirectoryObject(key = Callback(Search), title='Search', summary='Search UFlix', prompt='Search for...'))
+	html = HTML.ElementFromURL(BASE_URL + listtype)
 	for each in html.xpath("//div[@class='form-group']/select/option"):
 		try:
 			title = each.xpath("./text()")[0]
@@ -69,6 +99,7 @@ def MainMenu():
 def ShowCategory(title, category, page_count):
 
 	oc = ObjectContainer(title1 = title)
+	oc.add(InputDirectoryObject(key = Callback(Search), title='Search', summary='Search UFlix', prompt='Search for...'))
 	thistitle = title
 	page_data = HTML.ElementFromURL(BASE_URL + '/' + str(category) + '/date/' + str(page_count))
 	
@@ -76,13 +107,21 @@ def ShowCategory(title, category, page_count):
 		url = each.xpath("./a/@href")[0]
 		title = each.xpath("./a/@title")[0].replace('Watch ','',-1).replace(' Online For FREE','',-1)
 		thumb = each.xpath("./a/img/@src")[0]
-		
-		oc.add(DirectoryObject(
-			key = Callback(EpisodeDetail, title = title, url = url),
-			title = title,
-			thumb = Resource.ContentsOfURLWithFallback(url = thumb, fallback='icon-cover.png')
+
+		if "show" in url:
+			oc.add(DirectoryObject(
+				key = Callback(ShowEpisodes, title = title, url = url),
+				title = title,
+				thumb = Resource.ContentsOfURLWithFallback(url = thumb, fallback='icon-cover.png')
+				)
 			)
-		)
+		else:
+			oc.add(DirectoryObject(
+				key = Callback(EpisodeDetail, title = title, url = url),
+				title = title,
+				thumb = Resource.ContentsOfURLWithFallback(url = thumb, fallback='icon-cover.png')
+				)
+			)
 
 	oc.add(NextPageObject(
 		key = Callback(ShowCategory, title = thistitle, category = category, page_count = int(page_count) + 1),
@@ -91,6 +130,29 @@ def ShowCategory(title, category, page_count):
 			)
 		)
 	
+	return oc
+
+######################################################################################
+@route(PREFIX + "/showepisodes")	
+def ShowEpisodes(title, url):
+
+	oc = ObjectContainer(title1 = title)
+	oc.add(InputDirectoryObject(key = Callback(Search), title='Search', summary='Search UFlix', prompt='Search for...'))
+	html = HTML.ElementFromURL(url)
+
+	for each in html.xpath("//div[@class='col-md-6 col-xs-12']"):
+		title = each.xpath("./div[@class='bordered-heading']/span/text()")[0]
+		for row in each.xpath("./div[@style='border-bottom:1px solid #C5C5C5;']/a"):
+			title = title + ' ' + row.xpath("./text()")[0] + ' ' + row.xpath("./span/text()")[0]
+			url = row.xpath("./@href")[0]
+			thumb = ""
+			oc.add(DirectoryObject(
+				key = Callback(EpisodeDetail, title = title, url = url),
+					title = title,
+					thumb = Resource.ContentsOfURLWithFallback(url = thumb, fallback='icon-series.png')
+					)
+			)
+			title = each.xpath("./div[@class='bordered-heading']/span/text()")[0]
 	return oc
 
 ######################################################################################
@@ -103,11 +165,12 @@ def EpisodeDetail(title, url):
 	page_data = HTML.ElementFromURL(url)
 	title = page_data.xpath("//a[@class='title-title']/text()")[0]
 	thumb = page_data.xpath("//img[@class='img-responsive']/@src")
-	url = url
+	description = page_data.xpath("//div[@class='row title-plot']/text()")[0]
 	
 	oc.add(VideoClipObject(
 		url = url,
 		title = title,
+		summary = description,
 		thumb = Resource.ContentsOfURLWithFallback(url = thumb, fallback='icon-cover.png')
 		)
 	)	
@@ -127,12 +190,19 @@ def Search(query):
 		url = each.xpath("./a/@href")[0]
 		title = each.xpath("./a/@title")[0].replace('Watch ','',-1).replace(' Online For FREE','',-1)
 		thumb = each.xpath("./a/img/@src")[0]
-
-		oc.add(DirectoryObject(
+		if "show" in url:
+			oc.add(DirectoryObject(
+				key = Callback(ShowEpisodes, title = title, url = url),
+				title = title,
+				thumb = Resource.ContentsOfURLWithFallback(url = thumb, fallback='icon-cover.png')
+				)
+			)
+		else:
+			oc.add(DirectoryObject(
 				key = Callback(EpisodeDetail, title = title, url = url),
 				title = title,
 				thumb = Resource.ContentsOfURLWithFallback(url = thumb, fallback='icon-cover.png')
 				)
-		)
+			)
 
 	return oc
