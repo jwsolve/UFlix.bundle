@@ -46,12 +46,15 @@ def PlayVideo(url, res):
 	page = HTML.ElementFromURL(url)
 	view_url = ""
 	for each in page.xpath("//center/a[contains(@class,'btn-primary')]"):
-		#view_url = str(each.xpath("./@href")[0]) + view_url
+		try:
+			ampcheck = each.xpath("./@alt")[0]
+		except:
+			ampcheck = each.xpath("./@title")[0]
 		if "uflix" in each.xpath("./@href")[0]:
-			try:
+			if "&" in ampcheck:
 				thisurl = each.xpath("./@href")[0].split('&')[3].replace("url=","",1)
 				view_url = str(base64.b64decode(thisurl)) + "," + view_url
-			except:
+			else:
 				thisurl = each.xpath("./@href")[0].split('&')[2].replace("url=","",1)
 				view_url = str(base64.b64decode(thisurl)) + "," + view_url
 
@@ -91,5 +94,3 @@ def PlayVideo(url, res):
 				break
 			except:
 				pass
-		else:
-			pass
