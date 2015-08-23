@@ -20,6 +20,9 @@ MOVIES_URL = "http://uflix.me/movies"
 SHOWS_URL = "http://uflix.me/tv-shows"
 SEARCH_URL = "http://uflix.me/index.php?menu=search&query="
 
+import updater
+updater.init(repo = '/jwsolve/uflix.bundle', branch = 'master')
+
 ######################################################################################
 # Set global variables
 
@@ -43,27 +46,17 @@ def Start():
 def MainMenu():
 
 	oc = ObjectContainer()
+	updater.add_button_to(container, PerformUpdate)
 	oc.add(InputDirectoryObject(key = Callback(Search), title='Search', summary='Search UFlix', prompt='Search for...'))
 	oc.add(DirectoryObject(key = Callback(ShowGenres, title="Movies", listtype='/movies'), title = "Movies", thumb = R(ICON_MOVIES)))
 	oc.add(DirectoryObject(key = Callback(ShowGenres, title="TV Shows", listtype='/tv-shows'), title = "TV Shows", thumb = R(ICON_MOVIES)))
-	#html = HTML.ElementFromURL(MOVIES_URL)
-	#for each in html.xpath("//div[@class='form-group']/select/option"):
-	#	try:
-	#		title = each.xpath("./text()")[0]
-	#		url = each.xpath("./@value")[0]
-	#		oc.add(DirectoryObject(
-	#			key = Callback(ShowCategory, 
-	#				title=title, 
-	#				category=url, 
-	#				page_count = 1), 
-	#			title = title, 
-	#			thumb = R(ICON_MOVIES)
-	#			)
-	#		)
-	#	except:
-	#		pass
 
 	return oc
+
+######################################################################################
+@route(PREFIX + "/performupdate")
+def PerformUpdate():
+	return updater.PerformUpdate()
 
 ######################################################################################
 # Creates page url from category and creates objects from that page

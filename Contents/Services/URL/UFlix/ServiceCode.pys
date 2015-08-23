@@ -26,21 +26,16 @@ def MediaObjectsForURL(url):
 	return [
 		MediaObject(
 			parts = [
-				PartObject(key=Callback(PlayVideo, url=url, post_url=url, res=720))
+				PartObject(key=Callback(PlayVideo, url=url, post_url=url))
 			],
-			video_resolution = 720,
-			bitrate = 1500,
 			container = Container.MP4,
-			video_codec = VideoCodec.H264,
-			audio_codec = AudioCodec.AAC,
-			audio_channels = 2,
 			optimized_for_streaming = True if Client.Product != 'Plex Web' else False
 		)
 	]
 
 ########################################################################################
 @indirect
-def PlayVideo(url, res):
+def PlayVideo(url):
 
 	page = HTML.ElementFromURL(url)
 	view_url = ""
@@ -49,14 +44,13 @@ def PlayVideo(url, res):
 			ampcheck = each.xpath("./@alt")[0]
 		except:
 			ampcheck = each.xpath("./@title")[0]
-		if "uflix" in each.xpath("./@href")[0]:
+		if "domain=" in each.xpath("./@href")[0]:
 			if "&" in ampcheck:
 				thisurl = each.xpath("./@href")[0].split('&')[3].replace("url=","",1)
 				view_url = str(base64.b64decode(thisurl)) + "," + view_url
 			else:
 				thisurl = each.xpath("./@href")[0].split('&')[2].replace("url=","",1)
 				view_url = str(base64.b64decode(thisurl)) + "," + view_url
-
 	view_url = view_url.rstrip(',')
 	view_url = sorted(view_url.split(','), key=str.lower)
 
