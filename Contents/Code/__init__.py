@@ -46,7 +46,7 @@ def Start():
 def MainMenu():
 
 	oc = ObjectContainer()
-	updater.add_button_to(container, PerformUpdate)
+	updater.add_button_to(oc, PerformUpdate)
 	oc.add(InputDirectoryObject(key = Callback(Search), title='Search', summary='Search UFlix', prompt='Search for...'))
 	oc.add(DirectoryObject(key = Callback(ShowGenres, title="Movies", listtype='/movies'), title = "Movies", thumb = R(ICON_MOVIES)))
 	oc.add(DirectoryObject(key = Callback(ShowGenres, title="TV Shows", listtype='/tv-shows'), title = "TV Shows", thumb = R(ICON_MOVIES)))
