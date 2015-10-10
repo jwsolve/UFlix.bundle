@@ -137,7 +137,7 @@ def ShowEpisodes(title, url):
 		title = each.xpath("./div[@class='bordered-heading']/span/text()")[0]
 		for row in each.xpath("./div[@style='border-bottom:1px solid #C5C5C5;']/a"):
 			title = title + ' ' + row.xpath("./text()")[0] + ' ' + row.xpath("./span/text()")[0]
-			url = row.xpath("./@href")[0]
+			url = 'http:' + row.xpath("./@href")[0]
 			thumb = ""
 			oc.add(DirectoryObject(
 				key = Callback(EpisodeDetail, title = title, url = url),
