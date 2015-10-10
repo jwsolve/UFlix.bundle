@@ -8,6 +8,7 @@
       <key>URLPatterns</key>
       <array>
         <string>http://uflix.me/</string>
+        <string>http://www.uflix.is/</string>
       </array>
     </dict>
   </dict>

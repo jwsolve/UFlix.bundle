@@ -15,10 +15,10 @@ ICON_NEXT = "icon-next.png"
 ICON_MOVIES = "icon-movies.png"
 ICON_SERIES = "icon-series.png"
 ICON_QUEUE = "icon-queue.png"
-BASE_URL = "http://uflix.me"
-MOVIES_URL = "http://uflix.me/movies"
-SHOWS_URL = "http://uflix.me/tv-shows"
-SEARCH_URL = "http://uflix.me/index.php?menu=search&query="
+BASE_URL = "http://www.uflix.is"
+MOVIES_URL = "http://www.uflix.is/movies"
+SHOWS_URL = "http://www.uflix.is/tv-shows"
+SEARCH_URL = "http://www.uflix.is/index.php?menu=search&query="
 
 import updater
 updater.init(repo = '/jwsolve/uflix.bundle', branch = 'master')
@@ -37,7 +37,7 @@ def Start():
 	
 	HTTP.CacheTime = CACHE_1HOUR
 	HTTP.Headers['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36'
-	HTTP.Headers['Referer'] = 'http://uflix.me/'
+	HTTP.Headers['Referer'] = 'http://www.uflix.is/'
 	
 ######################################################################################
 # Menu hierarchy
@@ -97,7 +97,7 @@ def ShowCategory(title, category, page_count):
 	page_data = HTML.ElementFromURL(BASE_URL + '/' + str(category) + '/date/' + str(page_count))
 	
 	for each in page_data.xpath("//figure[contains(@class,'figured')]"):
-		url = each.xpath("./a/@href")[0]
+		url = 'http:' + each.xpath("./a/@href")[0]
 		title = each.xpath("./a/@title")[0].replace('Watch ','',-1).replace(' Online For FREE','',-1)
 		thumb = each.xpath("./a/img/@src")[0]
 
