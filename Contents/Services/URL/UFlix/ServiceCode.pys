@@ -12,8 +12,7 @@ def MetadataObjectForURL(url):
 	page = HTML.ElementFromURL(url)
 	title = page.xpath("//div[@class='row title-info']/span/a/text()")[0]
 	description = page.xpath("//div[@class='row title-plot']/text()")[0]
-	thumb = page.xpath("//img[@class='img-responsive']/@src")[0].split('=')[1].split('&')[0]
-
+	thumb = page.xpath("//img[@class='img-responsive']/@src")[0]
 	return VideoClipObject(
 		title = title,
 		summary = description.strip(),

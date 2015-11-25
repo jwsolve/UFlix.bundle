@@ -96,10 +96,10 @@ def ShowCategory(title, category, page_count):
 	thistitle = title
 	page_data = HTML.ElementFromURL(BASE_URL + '/' + str(category) + '/date/' + str(page_count))
 	
-	for each in page_data.xpath("//figure[contains(@class,'figured')]"):
+	for each in page_data.xpath("//figure[@style='display:inline-block;']"):
 		url = each.xpath("./a/@href")[0]
 		title = each.xpath("./a/@title")[0].replace('Watch ','',-1).replace(' Online For FREE','',-1)
-		thumb = each.xpath("./a/img/@src")[0].split('=')[1].split('&')[0]
+		thumb = each.xpath("./a/img/@src")[0]
 
 		if "show" in url:
 			oc.add(DirectoryObject(
@@ -132,13 +132,12 @@ def ShowEpisodes(title, url):
 	oc = ObjectContainer(title1 = title)
 	oc.add(InputDirectoryObject(key = Callback(Search), title='Search', summary='Search UFlix', prompt='Search for...'))
 	html = HTML.ElementFromURL(url)
-
+	thumb = html.xpath("//img[@class='img-responsive']/@src")[0]
 	for each in html.xpath("//div[@class='col-md-6 col-xs-12']"):
 		title = each.xpath("./div[@class='bordered-heading']/span/text()")[0]
 		for row in each.xpath("./div[@style='border-bottom:1px solid #C5C5C5;']/a"):
 			title = title + ' ' + row.xpath("./text()")[0] + ' ' + row.xpath("./span/text()")[0]
-			url = 'http:' + row.xpath("./@href")[0]
-			thumb = ""
+			url = row.xpath("./@href")[0]
 			oc.add(DirectoryObject(
 				key = Callback(EpisodeDetail, title = title, url = url),
 					title = title,
@@ -157,7 +156,7 @@ def EpisodeDetail(title, url):
 	oc = ObjectContainer(title1 = title)
 	page_data = HTML.ElementFromURL(url)
 	title = page_data.xpath("//div[@class='row title-info']/span/a/text()")[0]
-	thumb = page_data.xpath("//img[@class='img-responsive']/@src")[0].split('=')[1].split('&')[0]
+	thumb = page_data.xpath("//img[@class='img-responsive']/@src")[0]
 	description = page_data.xpath("//div[@class='row title-plot']/text()")[0]
 	
 	oc.add(VideoClipObject(
@@ -179,7 +178,7 @@ def Search(query):
 
 	html = HTML.ElementFromString(data)
 
-	for each in html.xpath("//figure[contains(@class,'figured')]"):
+	for each in html.xpath("//figure[@style='display:inline-block;']"):
 		url = each.xpath("./a/@href")[0]
 		title = each.xpath("./a/@title")[0].replace('Watch ','',-1).replace(' Online For FREE','',-1)
 		thumb = each.xpath("./a/img/@src")[0]
