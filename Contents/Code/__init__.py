@@ -15,10 +15,10 @@ ICON_NEXT = "icon-next.png"
 ICON_MOVIES = "icon-movies.png"
 ICON_SERIES = "icon-series.png"
 ICON_QUEUE = "icon-queue.png"
-BASE_URL = "http://vizz.is"
-MOVIES_URL = "http://vizz.is/movies"
-SHOWS_URL = "http://vizz.is/tv-shows"
-SEARCH_URL = "http://vizz.is/index.php?menu=search&query="
+BASE_URL = "http://uflix.ws"
+MOVIES_URL = "http://uflix.ws/movies"
+SHOWS_URL = "http://uflix.ws/tv-shows"
+SEARCH_URL = "http://uflix.ws/index.php?menu=search&query="
 
 import updater
 updater.init(repo = '/jwsolve/uflix.bundle', branch = 'master')
