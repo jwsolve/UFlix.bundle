@@ -37,7 +37,7 @@ def Start():
 	
 	HTTP.CacheTime = CACHE_1HOUR
 	HTTP.Headers['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36'
-	HTTP.Headers['Referer'] = 'http://vizz.is/'
+	HTTP.Headers['Referer'] = 'http://uflix.ws/'
 	
 ######################################################################################
 # Menu hierarchy
